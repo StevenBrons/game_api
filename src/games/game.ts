@@ -1,27 +1,52 @@
+import nim from "../games/nim";
+
 export type stateId = string | number;
-export type transitionId = string | number;
+export type matchId = string | number;
+export type actionId = string | number;
 
 export enum GameType {
-	Nim,
-	TickTackToe,
+  Nim,
+  TickTackToe
 }
 
-export interface GeneralState {
-	stateId: stateId;
-	gameId: GameType;
-	matchId: string;
-	prevStateId: stateId | null;
+export class State {
+  stateId!: stateId;
+  gameType!: GameType;
+  matchId!: matchId;
+  prevStateId!: stateId | null;
 }
 
-export interface GeneralTransition {
-	transitionId: transitionId;
-	fromStateId: stateId;
-	toStateId?: stateId;
+export class Action {
+  actionId!: actionId;
+  fromStateId!: stateId;
+  matchId!: matchId;
 }
 
-export default interface Game {
-	isFinalState: (state: GeneralState) => boolean;
-	isValidTransition: (fromState: GeneralState | NimState, transition: GeneralTransition) => boolean;
-	getStartState: () => GeneralState;
-	applyStateTransition: (fromState: GeneralState, transition: GeneralTransition) => GeneralState;
-} 
+export default class Game {
+  isFinalState(state: State): boolean {
+    throw new Error("Unimplemented");
+  }
+
+  isValidAction(fromState: State, action: Action): boolean {
+    throw new Error("Unimplemented");
+  }
+
+  getStartState(): State {
+    throw new Error("Unimplemented");
+  }
+  applyAction(fromState: State, action: Action): State {
+    throw new Error("Unimplemented");
+  }
+  isValidState(state: State) {
+    throw new Error("Unimplemented");
+  }
+}
+
+export const getGame = (gameType: GameType): Game => {
+  switch (gameType) {
+    case GameType.Nim:
+      return nim;
+    default:
+      return new Game();
+  }
+};

@@ -1,35 +1,47 @@
-import UUID from "uuid/v4"
-import Game, { GeneralState, GeneralTransition, GameType } from "./game"
+import UUID from "uuid/v4";
+import Game, { State, Action, GameType } from "./game";
 
-export interface State extends GeneralState {
-	pile: number;
+const MIN_START_PILE = 100;
+const MAX_START_PILE = 100;
+
+export interface NimState extends State {
+  pile: number;
 }
 
-export interface Transition extends GeneralTransition {
-	numberToPick: number;
+export interface NimAction extends Action {
+  numberToPick: number;
 }
 
 const Nim: Game = {
-	getStartState: (): State => {
-		return {
-			stateId: UUID(),
-			pile: Math.floor(Math.random() * 100),
-			gameId: GameType.Nim,
-			matchId: UUID(),
-			prevStateId: null,
-		}
-	},
-	isValidTransition: (fromState: State, transition: Transition): boolean => {
-		return transition.numberToPick <= fromState.pile && transition.numberToPick > 0;
-	},
-	applyStateTransition: (fromState: State, transition: State): State => {
-		let newState = Object.assign(Object.create(Object.getPrototypeOf(fromState)), fromState);
-		newState.pile -= transition.numberToPick;
-		return newState;
-	},
-	isFinalState: (state: State): boolean => {
-		return state.pile === 0;
-	},
+  getStartState: (): NimState => {
+    return {
+      stateId: UUID(),
+      pile:
+        MIN_START_PILE +
+        Math.floor(Math.random() * (MAX_START_PILE - MIN_START_PILE)),
+      gameType: GameType.Nim,
+      matchId: UUID(),
+      prevStateId: null
+    };
+  },
+  isValidState: (state: NimState): boolean => {
+    return state.pile >= MIN_START_PILE && state.pile <= MAX_START_PILE;
+  },
+  isValidAction: (fromState: NimState, action: NimAction): boolean => {
+    return (
+      action.numberToPick <= fromState.pile &&
+      action.numberToPick <= 3 &&
+      action.numberToPick > 0
+    );
+  },
+  applyAction: (fromState: NimState, action: NimAction): NimState => {
+    let newState = { ...fromState };
+    newState.pile -= action.numberToPick;
+    return newState;
+  },
+  isFinalState: (state: NimState): boolean => {
+    return state.pile === 0;
+  }
 };
 
 export default Nim;

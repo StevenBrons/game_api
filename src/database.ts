@@ -1,7 +1,29 @@
 import Sequelize from "sequelize";
+import dotenv from "dotenv-safe";
+dotenv.config();
 
-// Option 1: Passing parameters separately
-const sequelize = new Sequelize('game_api', 'game_api_user', 'pw123', {
-	host: 'localhost',
-	dialect: "mysql",
-});
+const sequelize = new Sequelize.Sequelize(
+  (process.env.DATABASE_SCHEMA = ""),
+  (process.env.DATABASE_USER = ""),
+  (process.env.DATABASE_PASSWORD = ""),
+  {
+    host: process.env.DATABASE_HOST,
+    dialect: "mysql"
+  }
+);
+
+export class State extends Sequelize.Model {}
+State.init(
+  {
+    stateId: { type: Sequelize.STRING, primaryKey: true },
+    gameId: Sequelize.STRING,
+    matchId: Sequelize.STRING,
+    prevStateId: Sequelize.STRING
+  },
+  {
+    sequelize,
+    modelName: "task"
+  }
+);
+
+sequelize.sync();

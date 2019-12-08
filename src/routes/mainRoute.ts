@@ -1,9 +1,9 @@
 import express from "express";
-import nim from "../games/nim";
 import gameRoute from "./gameRoute";
+import { getGame, GameType } from "../games/game";
 
 const router = express.Router();
 
-router.use('/tick_tack_toe', gameRoute(nim));
+router.use("/nim", gameRoute(getGame(GameType.Nim)));
 
 export default router;
