@@ -1,15 +1,16 @@
 import createError from "http-errors";
-import express, { Request, Response, NextFunction, Errback } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-const app = express();
+import apiRoute from "./routes/apiRoute";
+import guiRoute from "./routes/guiRoute";
 
-const mainRoute = require("./routes/main")
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -17,7 +18,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', mainRoute);
+app.use("/api", apiRoute);
+app.use("/",guiRoute)
 
 // catch 404 and forward to error handler
 app.use((_req: Request, _res: Response, next: NextFunction) => {

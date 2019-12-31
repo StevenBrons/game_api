@@ -1,6 +1,8 @@
 import express from "express";
 import game from "../games/game";
 import { awaitMatch, awaitAction, submitAction } from "../handler";
+import { start } from "repl";
+import { HSTORE } from "sequelize/types";
 
 function promiseMiddleware(
   asyncFunction: (req: express.Request, res: express.Response) => Promise<any>
@@ -12,11 +14,11 @@ function promiseMiddleware(
   ) => {
     asyncFunction(req, res)
       .then(next)
-      .catch(error => {
+      .catch((error: Error) => {
         res.status(400);
         res.send({
           error: true,
-          message: error
+          message: error.message,
         });
       });
   };
@@ -28,23 +30,16 @@ export default (game: game): express.Router => {
   router.post(
     "/start",
     promiseMiddleware(async (req: express.Request, res: express.Response) => {
-      return awaitMatch();
-    })
-  );
-
-  router.post(
-    "/state",
-    promiseMiddleware(async (req: express.Request, res: express.Response) => {
-      const body = req.body;
-      return awaitAction(body.matchId);
+      const startState = await awaitMatch(game,req.body);
+      res.send(startState);
     })
   );
 
   router.post(
     "/action",
     promiseMiddleware(async (req: express.Request, res: express.Response) => {
-      const body = req.body;
-      return submitAction(body);
+      const newState = await submitAction(req.body);
+      res.send(newState);
     })
   );
 

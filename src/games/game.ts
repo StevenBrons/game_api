@@ -5,8 +5,8 @@ export type matchId = string | number;
 export type actionId = string | number;
 
 export enum GameType {
-  Nim,
-  TickTackToe
+  Nim = "nim",
+  TickTackToe = "tick_tack_toe"
 }
 
 export class State {
@@ -38,6 +38,9 @@ export default class Game {
     throw new Error("Unimplemented");
   }
   isValidState(state: State) {
+    throw new Error("Unimplemented");
+  }
+  getType(): GameType {
     throw new Error("Unimplemented");
   }
 }
